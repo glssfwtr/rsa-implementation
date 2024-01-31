@@ -5,19 +5,16 @@
 
 char DecryptValue(int encryptedValue);
 
-int main(int argc, char *argv[])
+int main()
 {
       // since [0] is program name, add 1 to total argc
-      if (!(argc == 4))
-      {
-            std::cout << "BAD ARGS\n";
-            return 1;
-      }
+
 
       // 'P'ublic Key, P = (e, n)
-      int eVALUE{std::stoi(argv[1])};
-      int nVALUE{std::stoi(argv[2])};
-      int mVALUE{std::stoi(argv[3])};
+      int eVALUE{};
+      int nVALUE{};
+      int mVALUE{};
+      std::cin >> eVALUE >> nVALUE >> mVALUE;
 
       // integer-character mapping
       std::unordered_map<int, char> integerToCharacterEncoding {
@@ -41,11 +38,7 @@ int main(int argc, char *argv[])
       }
 
       std::cout << "e, n, m:\n";
-      for (int i{1}; i < argc; ++i)
-      {
-            std::cout << argv[i] << " ";
-      }
-      std::cout << "\n";
+      std::cout << eVALUE << " " << nVALUE << " " << mVALUE << "\n";
 
       // input encrypted integers
       int encryptedValue{};
@@ -65,13 +58,19 @@ int main(int argc, char *argv[])
 
 
 
-      /*
-            START DOING STUFF HERE
-      */
+
+      std::cout << "===OUTPUT===\n";
 
       // use these integers to map to integerToCharacterEncoding
       std::vector<int> decryptedVector{};
 
-      std::cout << "===END===\n";
+      /*
+            START DOING STUFF HERE
+      */
+
+
+
+
+
       return 0;
 }
