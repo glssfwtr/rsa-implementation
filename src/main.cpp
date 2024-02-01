@@ -1,9 +1,48 @@
+#include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
+void PrintBadKeyMessage()
+{
+      std::cout << "Public key is not valid!\n";
+}
+
 char DecryptValue(int encryptedValue);
+
+bool IsPrime_PrimalityTest(int sus)
+{
+      if (sus == 0 || sus == 1)
+            return false;
+
+      int roof{std::sqrt(sus)};
+      for (int i{2}; i <= roof; ++i)
+      {
+            if (sus % i == 0)
+                  return false; //bad because value is divisible by something other than themselves
+      }
+
+      return true;
+}
+
+void SetPrimeFactors(int nVAL, int& pVAL, int& qVAL)
+{
+      for (int i{2}; i <= nVAL / 2; ++i)
+      {
+            // left to right, short circuit on condition 1
+            if ((nVAL % i == 0) && IsPrime_PrimalityTest(i))
+            {
+                  pVAL = i;
+                  qVAL = nVAL / i; // solve for q by n = p * q => q = n / p
+
+                  return;
+            }
+      }
+
+      return;
+}
 
 int main()
 {
@@ -55,19 +94,45 @@ int main()
       std::cout << "\tmVALUE: " << mVALUE << "\n";
       std::cout << "\tENC_VEC_SIZE: " << encryptedVector.size() << "\n";
 
-
-
-
-
       std::cout << "===OUTPUT===\n";
+
+
+
 
       // use these integers to map to integerToCharacterEncoding
       std::vector<int> decryptedVector{};
 
       /*
-            START DOING STUFF HERE
+            get p,q
       */
+      int pVALUE{};
+      int qVALUE{};
+      SetPrimeFactors(nVALUE, pVALUE, qVALUE);
 
+      if (!(IsPrime_PrimalityTest(qVALUE))) // is it guaranteed for q to be prime? doing this just in case
+      {
+            PrintBadKeyMessage();
+            std::cout << "p is prime, but NOT q\n";
+            return 0;
+      }
+
+      std::cout << "p: " << pVALUE << "\nq: " << qVALUE << "\n";
+
+      /*
+            get phi(n), Euler's Totient
+      */
+      int eulerTotient{(pVALUE - 1) * (qVALUE - 1)};
+
+      // make sure eVALUE and phi(n) is relatively prime
+      int gcd_e_totient{std::__gcd(eVALUE, eulerTotient)};
+      if (!(gcd_e_totient == 1))
+      {
+            PrintBadKeyMessage();
+            return 0;
+      }
+
+      std::cout << "gcd(" << eVALUE << ", " << eulerTotient << ") = " << gcd_e_totient << "\n";
+      std::cout << "Totient: " << eulerTotient << "\n";
 
 
 
