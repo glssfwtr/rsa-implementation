@@ -44,9 +44,55 @@ void SetPrimeFactors(int nVAL, int& pVAL, int& qVAL)
       return;
 }
 
+// brute force divsion i until modulo of totient gives 1
+int ComputeInverseModulo(int eVAL, int totient)
+{
+      for (int i{1}; i < totient; ++i)
+      {
+            if ((eVAL % totient) * (i % totient) % totient == 1)
+            {
+                  return i;
+            }
+      }
+}
+
+// exponentiation
+int DecryptInteger(int encrypted, int dVAL, int nVAL)
+{
+    int decryptedInteger = 1;
+    while(dVAL) // use signature var
+      {
+            if (dVAL & 1) // check if odd bit
+            {
+                  decryptedInteger = (decryptedInteger * encrypted) % nVAL;
+            }
+
+            dVAL /= 2; // halve exponent
+            encrypted = (encrypted*encrypted) % nVAL;
+      }
+
+      return decryptedInteger;
+}
+
+
 int main()
 {
-      // since [0] is program name, add 1 to total argc
+      // [0] is program name, add 1 to total argc
+
+      // integer-character mapping
+      std::unordered_map<int, char> integerToCharacterEncoding {
+            {7, 'A'}, {8, 'B'}, {9, 'C'},
+            {10, 'D'}, {11, 'E'}, {12, 'F'},
+            {13, 'G'}, {14, 'H'}, {15, 'I'},
+            {16, 'J'}, {17, 'K'}, {18, 'L'},
+            {19, 'M'}, {20, 'N'}, {21, 'O'},
+            {22, 'P'}, {23, 'Q'}, {24, 'R'},
+            {25, 'S'}, {26, 'T'}, {27, 'U'},
+            {28, 'V'}, {29, 'W'}, {30, 'X'},
+            {31, 'Y'}, {32, 'Z'}, {33, ' '},
+            {34, '\"'}, {35, ','}, {36, '.'},
+            {37, '\''}
+      };
 
 
       // 'P'ublic Key, P = (e, n)
@@ -55,26 +101,6 @@ int main()
       int mVALUE{};
       std::cin >> eVALUE >> nVALUE >> mVALUE;
 
-      // integer-character mapping
-      std::unordered_map<int, char> integerToCharacterEncoding {
-            {8, 'A'}, {9, 'B'}, {10, 'C'},
-            {11, 'D'}, {12, 'E'}, {13, 'F'},
-            {14, 'G'}, {15, 'H'}, {16, 'I'},
-            {17, 'J'}, {18, 'K'}, {19, 'L'},
-            {20, 'M'}, {21, 'N'}, {22, 'O'},
-            {23, 'P'}, {24, 'Q'}, {25, 'R'},
-            {26, 'S'}, {27, 'T'}, {28, 'U'},
-            {29, 'V'}, {30, 'W'}, {31, 'X'},
-            {32, 'Y'}, {33, 'Z'}, {34, ' '},
-            {35, '\"'}, {36, ','}, {37, '.'},
-            {38, '\''}
-      };
-
-      std::cout << "MAPPING:\n";
-      for (int i{8}; i < 39; ++i)
-      {
-            std::cout << integerToCharacterEncoding[i] << " ";
-      }
 
       std::cout << "e, n, m:\n";
       std::cout << eVALUE << " " << nVALUE << " " << mVALUE << "\n";
@@ -99,8 +125,6 @@ int main()
 
 
 
-      // use these integers to map to integerToCharacterEncoding
-      std::vector<int> decryptedVector{};
 
       /*
             get p,q
@@ -113,6 +137,13 @@ int main()
       {
             PrintBadKeyMessage();
             std::cout << "p is prime, but NOT q\n";
+            return 0;
+      }
+
+      if (pVALUE == qVALUE)
+      {
+            PrintBadKeyMessage();
+            std::cout << "p is q\n";
             return 0;
       }
 
@@ -133,6 +164,29 @@ int main()
 
       std::cout << "gcd(" << eVALUE << ", " << eulerTotient << ") = " << gcd_e_totient << "\n";
       std::cout << "Totient: " << eulerTotient << "\n";
+
+      /*
+            get d = e^(-1) mod phi(n)
+      */
+      int dVALUE{ComputeInverseModulo(eVALUE, eulerTotient)};
+
+      std::cout << "d: " << dVALUE << "\n";
+
+      // use these integers to map to integerToCharacterEncoding
+      std::vector<int> decryptedVector{};
+      std::vector<char> mappedDecryption{};
+
+      for (int i{0}; i < encryptedVector.size(); ++i)
+      {
+            decryptedVector.push_back(DecryptInteger(encryptedVector[i], dVALUE, nVALUE));
+      }
+
+      for (auto& iter: decryptedVector)
+      {
+            std::cout << integerToCharacterEncoding[iter];
+      }
+
+
 
 
 
