@@ -7,7 +7,7 @@
 
 void PrintBadKeyMessage()
 {
-      std::cout << "Public key is not valid!\n";
+      std::cout << "Public key is not valid!";
 }
 
 char DecryptValue(int encryptedValue);
@@ -18,6 +18,7 @@ bool IsPrime_PrimalityTest(int sus)
             return false;
 
       int roof{std::sqrt(sus)};
+
       for (int i{2}; i <= roof; ++i)
       {
             if (sus % i == 0)
@@ -50,9 +51,7 @@ int ComputeInverseModulo(int eVAL, int totient)
       for (int i{1}; i < totient; ++i)
       {
             if ((eVAL % totient) * (i % totient) % totient == 1)
-            {
                   return i;
-            }
       }
 }
 
@@ -60,20 +59,19 @@ int ComputeInverseModulo(int eVAL, int totient)
 int DecryptInteger(int encrypted, int dVAL, int nVAL)
 {
     int decryptedInteger = 1;
-    while(dVAL) // use signature var
+
+    while(dVAL) // use call stack vars
       {
-            if (dVAL & 1) // check if odd bit
-            {
+            if (dVAL & 1) // check if last bit is 1 : or odd
                   decryptedInteger = (decryptedInteger * encrypted) % nVAL;
-            }
 
             dVAL /= 2; // halve exponent
+
             encrypted = (encrypted*encrypted) % nVAL;
       }
 
       return decryptedInteger;
 }
-
 
 int main()
 {
@@ -101,10 +99,6 @@ int main()
       int mVALUE{};
       std::cin >> eVALUE >> nVALUE >> mVALUE;
 
-
-      std::cout << "e, n, m:\n";
-      std::cout << eVALUE << " " << nVALUE << " " << mVALUE << "\n";
-
       // input encrypted integers
       int encryptedValue{};
       std::vector<int> encryptedVector;
@@ -115,16 +109,10 @@ int main()
       }
 
       // checksum
-      std::cout << "LAST VALUE: " << encryptedVector[mVALUE - 1] << "\n";
-      std::cout << (encryptedVector.size() == static_cast<std::vector<int>::size_type>(mVALUE) ? "GOOD MATCH\n" : "BAD MATCH\n");
-      std::cout << "\tmVALUE: " << mVALUE << "\n";
-      std::cout << "\tENC_VEC_SIZE: " << encryptedVector.size() << "\n";
-
-      std::cout << "===OUTPUT===\n";
-
-
-
-
+      // std::cout << "LAST VALUE: " << encryptedVector[mVALUE - 1] << "\n";
+      // std::cout << (encryptedVector.size() == static_cast<std::vector<int>::size_type>(mVALUE) ? "GOOD MATCH\n" : "BAD MATCH\n");
+      // std::cout << "\tmVALUE: " << mVALUE << "\n";
+      // std::cout << "\tENC_VEC_SIZE: " << encryptedVector.size() << "\n";
 
       /*
             get p,q
@@ -136,18 +124,16 @@ int main()
       if (!(IsPrime_PrimalityTest(qVALUE))) // is it guaranteed for q to be prime? doing this just in case
       {
             PrintBadKeyMessage();
-            std::cout << "p is prime, but NOT q\n";
+            // std::cout << "p is prime, but NOT q\n";
             return 0;
       }
 
       if (pVALUE == qVALUE)
       {
             PrintBadKeyMessage();
-            std::cout << "p is q\n";
+            // std::cout << "p is q\n";
             return 0;
       }
-
-      std::cout << "p: " << pVALUE << "\nq: " << qVALUE << "\n";
 
       /*
             get phi(n), Euler's Totient
@@ -162,34 +148,29 @@ int main()
             return 0;
       }
 
-      std::cout << "gcd(" << eVALUE << ", " << eulerTotient << ") = " << gcd_e_totient << "\n";
-      std::cout << "Totient: " << eulerTotient << "\n";
+      // std::cout << "gcd(" << eVALUE << ", " << eulerTotient << ") = " << gcd_e_totient << "\n";
 
       /*
             get d = e^(-1) mod phi(n)
       */
       int dVALUE{ComputeInverseModulo(eVALUE, eulerTotient)};
 
-      std::cout << "d: " << dVALUE << "\n";
+      std::cout << pVALUE << " " << qVALUE << " " << eulerTotient << " " << dVALUE << "\n";
 
       // use these integers to map to integerToCharacterEncoding
       std::vector<int> decryptedVector{};
       std::vector<char> mappedDecryption{};
 
       for (int i{0}; i < encryptedVector.size(); ++i)
-      {
             decryptedVector.push_back(DecryptInteger(encryptedVector[i], dVALUE, nVALUE));
-      }
 
-      for (auto& iter: decryptedVector)
-      {
+      for (int iter: decryptedVector)
+            std::cout << iter << " ";
+
+      std::cout << "\n";
+
+      for (int iter: decryptedVector)
             std::cout << integerToCharacterEncoding[iter];
-      }
-
-
-
-
-
 
       return 0;
 }
